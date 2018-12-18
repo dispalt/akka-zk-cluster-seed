@@ -1,14 +1,14 @@
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
-organization := "com.sclasen"
+organization := "com.dispalt"
 name := "akka-zk-cluster-seed"
 version := "0.1.11-SNAPSHOT"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.8"
 crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
 
-val akkaVersion = "2.5.9"
+val akkaVersion = "2.5.17"
 val akkaHttpVersion = "10.0.11"
 
 val akkaDependencies = Seq(
@@ -64,14 +64,19 @@ lazy val rootProject = (project in file(".")).
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:sclasen/akka-zk-cluster-seed.git</url>
-        <connection>scm:git:git@github.com:sclasen/akka-zk-cluster-seed.git</connection>
+        <url>git@github.com:dispalt/akka-zk-cluster-seed.git</url>
+        <connection>scm:git:git@github.com:dispalt/akka-zk-cluster-seed.git</connection>
       </scm>
       <developers>
         <developer>
           <id>sclasen</id>
           <name>Scott Clasen</name>
           <url>http://github.com/sclasen</url>
+        </developer>
+        <developer>
+          <id>dispalt</id>
+          <name>Dan Di Spaltro</name>
+          <url>http://github.com/dispalt</url>
         </developer>
       </developers>),
 
