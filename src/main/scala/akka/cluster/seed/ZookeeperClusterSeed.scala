@@ -2,6 +2,7 @@ package akka.cluster.seed
 
 import java.io.Closeable
 
+import akka.Done
 import akka.actor._
 import akka.cluster.{AkkaCuratorClient, AutoDownUnresolvedStrategies, Cluster, ZookeeperClusterSeedSettings}
 import org.apache.curator.framework.CuratorFramework
@@ -60,34 +61,14 @@ class ZookeeperClusterSeed(system: ExtendedActorSystem) extends Extension {
         import ConnectionState._
         newState match {
           case LOST =>
+            system.log.warning("Lost, leaving the actor system.")
             clusterSystem.leave(clusterSystem.selfAddress)
-            system.terminate()
           case _ =>
         }
         system.log.warning("component=zookeeper-cluser-seed at=conntection-state-changed state={}", newState)
       }
     })
 
-    clusterSystem.registerOnMemberRemoved {
-      // exit JVM when ActorSystem has been terminated
-      system.registerOnTermination(System.exit(0))
-      // shut down ActorSystem
-      system.terminate()
-      system.log.info("Termination started")
-
-      // In case ActorSystem shutdown takes longer than 10 seconds,
-      // exit the JVM forcefully anyway.
-      // We must spawn a separate thread to not block current thread,
-      // since that would have blocked the shutdown of the ActorSystem.
-      new Thread {
-        override def run(): Unit = {
-          if (Try(Await.ready(system.whenTerminated, 10.seconds)).isFailure) {
-            system.log.info("Forcing system exit")
-            System.exit(-1)
-          }
-        }
-      }.start()
-    }
   }
 
   private var seedEntryAdded = false
@@ -160,10 +141,11 @@ class ZookeeperClusterSeed(system: ExtendedActorSystem) extends Extension {
       removeSeedEntry()
     }
 
-    system.registerOnTermination {
-      ignoring(classOf[IllegalStateException]) {
-        client.close()
-      }
+    CoordinatedShutdown(system).addTask(
+      CoordinatedShutdown.PhaseBeforeActorSystemTerminate, "terminate-zk") { () =>
+      system.log.info("Shutting down Zookeeper Curator.")
+      client.close()
+      Future.successful(Done)
     }
   }
 
