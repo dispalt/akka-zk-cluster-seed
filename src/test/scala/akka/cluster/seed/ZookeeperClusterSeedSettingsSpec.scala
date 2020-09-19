@@ -4,10 +4,11 @@ import akka.actor.ActorSystem
 import akka.cluster.ZookeeperClusterSeedSettings
 import akka.testkit.TestKit
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.matchers.should.Matchers
 
 class ZookeeperClusterSeedSettingsSpec extends TestKit(ActorSystem("test", ZookeeperClusterSeedSettingsSpec.config))
-    with WordSpecLike with Matchers {
+    with AnyWordSpecLike with Matchers {
 
   "ZookeeperClusterSeedSettings " should {
     "parse authentication options from config" in {

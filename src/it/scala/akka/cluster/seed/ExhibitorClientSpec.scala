@@ -2,12 +2,18 @@ package akka.cluster.seed
 
 import language.postfixOps
 import akka.actor.ActorSystem
-import org.scalatest.{BeforeAndAfterAll, MustMatchers, WordSpec}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers._
+import org.scalatest.wordspec._
 import com.typesafe.config.ConfigFactory
+
 import concurrent.duration._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.must.Matchers
 
-class ExhibitorClientSpec extends WordSpec with MustMatchers with BeforeAndAfterAll with ScalaFutures {
+import scala.concurrent.Await
+
+class ExhibitorClientSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures {
 
 
   override implicit def patienceConfig: PatienceConfig = PatienceConfig(timeout = 5 seconds)
@@ -25,7 +31,7 @@ class ExhibitorClientSpec extends WordSpec with MustMatchers with BeforeAndAfter
 
   override protected def afterAll(): Unit = {
     super.afterAll()
-    system.shutdown()
+    Await.result(system.terminate(), Duration.Inf)
   }
 
   override protected def beforeAll(): Unit = {

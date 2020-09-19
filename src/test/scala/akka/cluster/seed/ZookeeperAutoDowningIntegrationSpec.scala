@@ -5,12 +5,13 @@ import akka.cluster.integration.ZookeeperHelper
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Span}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class ZookeeperAutoDowningIntegrationSpec extends WordSpec with Matchers with Eventually {
+class ZookeeperAutoDowningIntegrationSpec extends AnyWordSpec with Matchers with Eventually {
 
   import ZookeeperHelper._
 

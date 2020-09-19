@@ -5,12 +5,16 @@ import akka.cluster.client.ZookeeperClusterClientSettings
 import akka.cluster.seed.ZookeeperClusterSeed
 import akka.testkit.TestKit
 import com.typesafe.config.{Config, ConfigFactory}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers._
+import org.scalatest.matchers.should._
+import org.scalatest.wordspec.AnyWordSpecLike
 
 
 class ZookeeperClientIntegrationTests extends TestKit(
   ActorSystem("test", ZookeeperClientIntegrationSettingsSpec.config(ZookeeperHelper.server.getConnectString)))
-  with WordSpecLike with Matchers with BeforeAndAfterAll {
+  with AnyWordSpecLike with Matchers with BeforeAndAfterAll {
 
   import ZookeeperHelper._
 

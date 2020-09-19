@@ -3,13 +3,13 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 organization := "com.dispalt"
 name := "akka-zk-cluster-seed"
-version := "0.1.11"
+version := "0.1.12"
 
-scalaVersion := "2.12.8"
-crossScalaVersions := Seq(scalaVersion.value, "2.11.11")
+scalaVersion := "2.12.12"
+crossScalaVersions := Seq(scalaVersion.value, "2.13.3")
 
-val akkaVersion = "2.5.17"
-val akkaHttpVersion = "10.0.11"
+val akkaVersion = "2.6.9"
+val akkaHttpVersion = "10.1.12"
 
 val akkaDependencies = Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
@@ -39,12 +39,13 @@ val testDependencies = Seq(
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
-  "org.scalatest" %% "scalatest" % "3.0.1",
+  "org.scalatest" %% "scalatest" % "3.2.0",
+  "org.scalatest" %% "scalatest-wordspec" % "3.2.0",
   "com.typesafe.akka" %% "akka-multi-node-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
   "org.slf4j" % "log4j-over-slf4j" % "1.7.7",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
-  "org.apache.curator" % "curator-test" % curatorVersion
+  "org.apache.curator" % "curator-test" % curatorVersion,
 ).map(_ % Test)
 
 lazy val rootProject = (project in file(".")).
@@ -89,16 +90,15 @@ lazy val rootProject = (project in file(".")).
   ).
   settings(Defaults.itSettings:_*).
   settings(SbtMultiJvm.multiJvmSettings:_*).
-  settings(compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in IntegrationTest)).
-  settings(executeTests in IntegrationTest <<= (executeTests in Test, executeTests in MultiJvm) map {
-    case (testResults, multiNodeResults)  =>
-      val overall =
-        if (testResults.overall.id < multiNodeResults.overall.id)
+  settings(compile in MultiJvm := { (compile in MultiJvm).triggeredBy(compile in IntegrationTest).value }).
+  settings(executeTests in IntegrationTest := { 
+    val testResults = (executeTests in Test).value
+    val multiNodeResults = (executeTests in MultiJvm).value  
+    val overall =
           multiNodeResults.overall
-        else
-          testResults.overall
+
       Tests.Output(overall,
         testResults.events ++ multiNodeResults.events,
         testResults.summaries ++ multiNodeResults.summaries)
-  }).
+  } ).
   configs(IntegrationTest, MultiJvm)
